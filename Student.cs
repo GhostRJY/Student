@@ -38,6 +38,8 @@ namespace Institute
             set
             { 
                 if(value > DateTime.MinValue && value<DateTime.MaxValue)
+                    throw new ArgumentException("Недопустимое значение для даты рождения!");
+
                 m_dateOfBirth = value;
             }
         }

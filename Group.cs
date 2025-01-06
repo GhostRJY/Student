@@ -26,14 +26,11 @@ namespace Institute
             get { return m_course; }
             set
             {
-                if (value >= 0)
-                {
-                    m_course = value;
-                }
-                else
-                {
-                    Console.WriteLine("Недопустимое значение для номера групппы!");
-                }
+                if (value < 0)
+                    throw new ArgumentException("Недопустимое значение для курса!");
+
+                m_course = value;
+                
             }
         }
 

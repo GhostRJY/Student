@@ -102,6 +102,8 @@ namespace Institute
             {
                 Console.WriteLine(e.Message);
             }
+
+            
             //проверка отчисления студентов
             //group1.DismissAllWithAvg(7);
             //group1.ShowStudents();
