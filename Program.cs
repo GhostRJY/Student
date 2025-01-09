@@ -36,11 +36,14 @@ namespace Institute
 
         static void Main(string[] args)
         {
+           
             Person person = new Person("Иванов", "Иван", "Иванович", new DateTime(2000, 1, 20), "Odessa, Jukova, 15", "0931233212");
             Person person1 = new Person("Яковлев", "Александр", "Ибрагимович", new DateTime(2001, 3, 10), "Odessa, prospect Shevchenko, 12", "0932222222");
             Person person2 = new Person("Демидов", "Василий", "Петрович", new DateTime(1975, 8, 12), "Odessa, Tolbuhino, 10", "0933333333");
             Person person3 = new Person("Авокадо", "Анатолий", "Святославович", new DateTime(1980, 11, 1), "Odessa, Tamojennaya square, 5", "0934444444");
-
+           
+                
+           
             //Console.Write(person + "\n");
 
 
@@ -51,14 +54,13 @@ namespace Institute
 
             //Console.Write(student.Person+"\n");
             //Console.Write(person + "\n");
-
+            
             List<Student> students = new List<Student>();
-
             students.Add(new Student(person));
             students.Add(new Student(person1));
             students.Add(new Student(person2));
             students.Add(new Student(person3));
-
+            
             Group group1 = new Group();
             group1.Name = "ПВП-11";
             group1.Speciality = "Програмирование";
@@ -114,6 +116,32 @@ namespace Institute
             //group1.TransferStudent("Яковлев", ref group2);
             //group1.ShowStudents();
             //group2.ShowStudents();
+
+            //тест Clone()
+            Person clonePerson = (Person)person.Clone();
+            clonePerson.LastName = "Клонированный";
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Оригинал\n" + person);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"Клон\n" + clonePerson+'\n');
+
+            Student cloneStudent = (Student)students[1].Clone();
+            cloneStudent.Person.LastName = "Клонированный";
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Оригинал\n" + students[1]);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"Клон\n" + cloneStudent + '\n');
+
+            Group cloneGroup = (Group)group1;
+            cloneGroup.Speciality += "Клонированная";
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Оригинал");
+            group1.ShowStudents();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"Клон\n");
+            cloneGroup.ShowStudents();
+
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
     }
 }
