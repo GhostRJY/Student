@@ -10,7 +10,14 @@ namespace Institute
 {    
     class Student : ICloneable
     {
+        //Поля
         private Person m_person;
+        private List<int> m_exam;
+        private List<int> m_courseWork;
+        private List<int> m_studentWork;
+        private double m_avgMark;
+
+        //Свойства
         public Person Person
         {
             get { return m_person; }
@@ -19,13 +26,51 @@ namespace Institute
                 m_person = value;
             }
         }
+        public double AvgMark
+        {
+            get { return m_avgMark; }            
+        }
 
-        private List<int> m_exam;
-        private List<int> m_courseWork;
-        private List<int> m_studentWork;
+        public class AvgMarkComparer : IComparer<Student>
+        {
+            public int Compare(Student? left, Student? right)
+            {
+                if (left.AvgMark > right.AvgMark)
+                    return 1;
 
+                else if (left.AvgMark < right.AvgMark)
+                    return -1;
 
+                else
+                    return 0;
+            }
+        }
 
+        
+        public class LastNameASCComparer : IComparer<Student>
+        {
+            public int Compare(Student? left, Student? right)
+            {
+                return left.m_person.LastName.CompareTo(right.m_person.LastName);
+            }
+        }
+
+        public class FirstNameASCComparer : IComparer<Student>
+        {
+            public int Compare(Student? left, Student? right)
+            {
+                return left.m_person.FirstName.CompareTo(right.m_person.FirstName);
+            }
+        }
+
+        //Конструкторы        
+        public Student(in Person person, in List<int> exam, in List<int> courseWork, in List<int> studentWork)
+        {
+            m_person = new Person(person);
+            m_exam = new List<int>(exam);
+            m_courseWork = new List<int>(courseWork);
+            m_studentWork = new List<int>(studentWork);
+        }
         public Student(in Person person)
         {
             m_person = new Person(person);
@@ -41,13 +86,6 @@ namespace Institute
             m_studentWork = new List<int>(other.m_studentWork);
         }
 
-        public Student(in Person person, in List<int> exam, in List<int> courseWork, in List<int> studentWork)
-        {
-            m_person = new Person(person);
-            m_exam = new List<int>(exam);
-            m_courseWork = new List<int>(courseWork);
-            m_studentWork = new List<int>(studentWork);
-        }
 
         public override string ToString()
         {
@@ -58,16 +96,19 @@ namespace Institute
         public void AddExam(in int mark)
         {
             m_exam.Add(mark);
+            AverageMark();
         }
 
         public void AddCourseWork(in int mark)
         {
             m_courseWork.Add(mark);
+            AverageMark();
         }
 
         public void AddStudentWork(in int mark)
         {
             m_studentWork.Add(mark);
+            AverageMark();
         }
 
         ///показ успеваемости
@@ -128,12 +169,16 @@ namespace Institute
                     sum += item;
                 }
 
-                return sum / (m_exam.Count + m_courseWork.Count + m_studentWork.Count);
+                m_avgMark = sum / (m_exam.Count + m_courseWork.Count + m_studentWork.Count);
+
+                
             }
             else
             {
-                return 0;
+                m_avgMark = 0;
             }
+
+            return AvgMark;
         }
         public void ShowAverageMark()
         {

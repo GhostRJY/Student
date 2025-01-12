@@ -41,6 +41,51 @@ namespace Institute
             set { m_students = value; }
         }
 
+        internal class GroupEnumerator : IEnumerator<Student>
+        {
+            private Group m_group;
+            private int m_index;
+
+            //класс реализует интерфейс IEnumerator
+            public GroupEnumerator(in Group group)
+            {
+                m_group = group;
+                m_index = -1;
+            }
+            public Student Current
+            {
+                get
+                {
+                    if (m_index == -1 || m_index >= m_group.m_studentsCount)
+                        throw new Exception("не верный индекс колекции");
+                    
+                    return m_group.m_students[m_index];
+                }
+            }
+            object System.Collections.IEnumerator.Current
+            {
+                get { return Current; }
+            }
+            public void Dispose()
+            {
+                m_group = null;
+            }
+            public bool MoveNext()
+            {
+                return ++m_index < m_group.m_studentsCount;
+            }
+            public void Reset()
+            {
+                m_index = -1;
+            }
+        }
+
+        //получаю перечислитель
+        public GroupEnumerator GetEnumerator()
+        {
+            return new GroupEnumerator(this);
+        }
+
         // конструктор
         public Group(string name = "", string speciality = "", int course = 0)
         {
@@ -61,12 +106,12 @@ namespace Institute
             m_students = new List<Student>(other.m_students);
         }
 
-        //сортировка студентов по фамилии
-        private void SortGroup()
+        //сортировка студентов (по компаратору)
+        public void SortGroup(IComparer<Student> comparer)
         {
 
             if (m_studentsCount > 1)
-                m_students.Sort((x, y) => x.Person.LastName.CompareTo(y.Person.LastName));
+                m_students.Sort(comparer);
         }
 
         //добавление студента
@@ -75,7 +120,7 @@ namespace Institute
 
             m_students.Add(student);
             ++m_studentsCount;
-            SortGroup();
+            SortGroup(new Student.LastNameASCComparer());
 
         }
 
@@ -260,4 +305,6 @@ namespace Institute
             return new Group(this);
         }
     }
+
+
 }

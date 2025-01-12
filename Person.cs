@@ -55,7 +55,7 @@ namespace Institute
             get { return m_telephoneNumber; }
             set { m_telephoneNumber = value; }
         }
-
+        
         //конструкторы
         public Person(string lastName,
                       string firstName,

@@ -139,9 +139,29 @@ namespace Institute
             group1.ShowStudents();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"Клон\n");
-            cloneGroup.ShowStudents();
-
+            cloneGroup.ShowStudents();                        
             Console.ForegroundColor = ConsoleColor.Gray;
+
+            //тест перечисления
+            foreach (Student student in group1)
+            {
+                Console.WriteLine(student.Person.ToString());
+            }
+
+            //сортирую студентов по среднему баллу
+            Console.WriteLine("\nСортировка по среднему баллу");
+            group1.SortGroup(new Student.AvgMarkComparer());
+            group1.ShowStudents();
+
+            //сортирую студентов по фамилии
+            Console.WriteLine("\nСортировка по фамилии");
+            group1.SortGroup(new Student.LastNameASCComparer());
+            group1.ShowStudents();
+
+            //сортирую студентов по имени
+            Console.WriteLine("\nСортировка по имени");
+            group1.SortGroup(new Student.FirstNameASCComparer());
+            group1.ShowStudents();
         }
     }
 }
