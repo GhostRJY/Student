@@ -304,6 +304,35 @@ namespace Institute
         {
             return new Group(this);
         }
+
+        public void ShowStudentWithMark(int mark)
+        {
+            Console.WriteLine($"Студенты у которых есть оценка {mark} за экзамен");
+            for (int i = 0; i < m_students.Count; ++i)
+            {
+                for (int j = 0; j < m_students[i].Exam.Count; ++j)
+                {
+                    if (m_students[i].Exam[j] <= mark)
+                    {
+                        Console.WriteLine(m_students[i].ToString());
+                        break;
+                    }
+                }
+            }
+            
+        }
+
+        public void ShowExcellentStudent()
+        {
+            Console.WriteLine("Отличники:");
+            for (int i = 0; i < m_students.Count; ++i)
+            {
+                if (m_students[i].AverageMark() >= 9)
+                {
+                    Console.WriteLine(m_students[i].ToString());
+                }
+            }
+        }
     }
 
 

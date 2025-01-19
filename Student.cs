@@ -17,6 +17,11 @@ namespace Institute
         private List<int> m_studentWork;
         private double m_avgMark;
 
+        public List<int> Exam
+        {
+            get { return m_exam; }         
+        }
+
         //Свойства
         public Person Person
         {
