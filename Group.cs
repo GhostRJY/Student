@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Institute
 {
@@ -41,43 +42,45 @@ namespace Institute
             set { m_students = value; }
         }
 
+        public delegate bool FilterStudentDelegate(Student student);
+
         internal class GroupEnumerator : IEnumerator<Student>
         {
             private Group m_group;
             private int m_index;
 
             //класс реализует интерфейс IEnumerator
-            public GroupEnumerator(in Group group)
-            {
-                m_group = group;
-                m_index = -1;
-            }
-            public Student Current
-            {
-                get
+                public GroupEnumerator(in Group group)
                 {
-                    if (m_index == -1 || m_index >= m_group.m_studentsCount)
-                        throw new Exception("не верный индекс колекции");
-                    
-                    return m_group.m_students[m_index];
+                    m_group = group;
+                    m_index = -1;
                 }
-            }
-            object System.Collections.IEnumerator.Current
-            {
-                get { return Current; }
-            }
-            public void Dispose()
-            {
-                m_group = null;
-            }
-            public bool MoveNext()
-            {
-                return ++m_index < m_group.m_studentsCount;
-            }
-            public void Reset()
-            {
-                m_index = -1;
-            }
+                public Student Current
+                {
+                    get
+                    {
+                        if (m_index == -1 || m_index >= m_group.m_studentsCount)
+                            throw new Exception("не верный индекс колекции");
+                    
+                        return m_group.m_students[m_index];
+                    }
+                }
+                object System.Collections.IEnumerator.Current
+                {
+                    get { return Current; }
+                }
+                public void Dispose()
+                {
+                    m_group = null;
+                }
+                public bool MoveNext()
+                {
+                    return ++m_index < m_group.m_studentsCount;
+                }
+                public void Reset()
+                {
+                    m_index = -1;
+                }
         }
 
         //получаю перечислитель
@@ -253,6 +256,16 @@ namespace Institute
             return m_studentsCount == 0;
         }
 
+        //средний балл группы
+        public double AvgGroupMark()
+        {
+            double sum = 0;
+            for (int i = 0; i < m_studentsCount; ++i)
+            {
+                sum += m_students[i].AvgMark;
+            }
+            return sum / m_studentsCount;
+        }
         //Критерии
         public static bool operator true(Group group)
         {
@@ -322,6 +335,83 @@ namespace Institute
             
         }
 
+        //одинаковые оценки за курсовую или зачет или экзамен
+        public bool HaveSameMarks(in Student student)
+        {   
+            bool allSame = false;
+            var studMarks = new List<int>(student.CourseWork);
+            studMarks.Sort();
+
+            //беру массивы оценок сортирую и сравниваю
+            for (int i = 0; i < m_students.Count; ++i)
+            {
+                if (student.Person.FirstName != m_students[i].Person.FirstName && student.Person.LastName != m_students[i].Person.LastName)
+                {
+                    var marks = new List<int>(m_students[i].CourseWork);
+                    marks.Sort();
+                    int counter = 0;
+
+                    for (int j = 0; j < studMarks.Count; ++j)
+                    {
+                        
+                        if (studMarks[j] == marks[j])
+                        {
+                            ++counter;
+                        }
+
+                        if (counter == studMarks.Count)
+                        {
+                            allSame = true;
+                            return allSame;
+                        }
+                    }
+                }
+
+                
+            }
+                ////Алгоритм сравнения оценок студентов // не сработал надо будет доработать
+                //for (int i = 0; i < m_students.Count; ++i)
+                //{
+                //    int counter = 0;
+
+                //    //проверка на сравнение с самим собой
+                //    if (student.Person.FirstName != m_students[i].Person.FirstName && student.Person.LastName != m_students[i].Person.LastName)
+                //    {
+                //        if (student.CourseWork.Count == m_students[i].CourseWork.Count)
+                //        { 
+                //            //проверяю массив оценок студента
+                //            for (int j = 0; j < student.CourseWork.Count; ++j)
+                //            {
+                //                for (int k = 0; k < m_students[i].CourseWork.Count; ++k)
+                //                {
+                //                    //если оценки совпадают увеличиваю счетчик
+                //                    if (student.CourseWork[j] == m_students[i].CourseWork[k])
+                //                    {
+                //                        ++counter;
+                //                        break;
+                //                    }
+
+                //                }
+
+                //            }
+                //        }
+                //    }
+
+                //    //если счетчик равен количеству оценок у студента тогда есть студент с такими же оценками
+                //    if (counter == student.CourseWork.Count)
+                //    {
+                //        allSame = true;
+                //        break;
+                //    }
+
+                //    counter = 0;                
+                //}
+
+
+
+                return allSame;
+        }
+
         public void ShowExcellentStudent()
         {
             Console.WriteLine("Отличники:");
@@ -332,6 +422,20 @@ namespace Institute
                     Console.WriteLine(m_students[i].ToString());
                 }
             }
+        }
+
+        //метод фильтрации студентов
+        public List<Student> FilterStudents(FilterStudentDelegate filter)
+        {
+            List<Student> group = new List<Student>();
+            for (int i = 0; i < m_students.Count; ++i)
+            {
+                if (filter(m_students[i]))
+                {
+                    group.Add(m_students[i]);
+                }
+            }
+            return group;
         }
     }
 

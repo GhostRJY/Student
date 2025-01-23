@@ -22,6 +22,16 @@ namespace Institute
             get { return m_exam; }         
         }
 
+        public List<int> CourseWork
+        {
+            get { return m_courseWork; }
+        }
+
+        public List<int> StudentWork
+        {
+            get { return m_studentWork; }
+        }
+
         //Свойства
         public Person Person
         {
@@ -36,6 +46,31 @@ namespace Institute
             get { return m_avgMark; }            
         }
 
+        //возвращаю кол-во оценок
+        public int MarkCount()
+        {
+            return m_exam.Count + m_courseWork.Count + m_studentWork.Count;
+        }
+
+        public int SummaryMark()
+        {
+            int sum = 0;
+            foreach (var item in m_exam)
+            {
+                sum += item;
+            }
+            foreach (var item in m_courseWork)
+            {
+                sum += item;
+            }
+            foreach (var item in m_studentWork)
+            {
+                sum += item;
+            }
+            return sum;
+        }
+
+       
         public class AvgMarkComparer : IComparer<Student>
         {
             public int Compare(Student? left, Student? right)
@@ -190,6 +225,43 @@ namespace Institute
             Console.WriteLine($"Средняя оценка: {AverageMark()}");
         }
 
+        public double AvgMarkByType(string type)
+        {
+            int sum = 0;
+            int count = 0;
+            switch (type)
+            {
+                case "exam":
+                    foreach (var item in m_exam)
+                    {
+                        sum += item;
+                        ++count;
+                    }
+                    break;
+                
+                case "coursework":
+                    foreach (var item in m_courseWork)
+                    {
+                        sum += item;
+                        ++count;
+                    }
+                    break;
+
+                case "studentwork":
+                    foreach (var item in m_studentWork)
+                    {
+                        sum += item;
+                        ++count;
+                    }
+                    break;
+            }
+
+            if (count != 0)
+                return sum / count;
+            else
+                return 0;
+        }
+
         //Критерии
         public static bool operator true(Student student)
         {
@@ -228,5 +300,9 @@ namespace Institute
             return new Student(this);
         }
 
+        public bool HaveExamMark(in int mark)
+        {
+            return m_exam.Contains(mark);
+        }
     }
 }

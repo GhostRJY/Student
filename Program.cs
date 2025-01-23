@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -147,11 +148,13 @@ namespace Institute
                 for (int i = 0; i < 4; ++i)
                 {
                     ExamMark(student, random.Next(3, 13));
-                    CourseMark(student, random.Next(9, 13));
+                    CourseMark(student, random.Next(5, 9));
                     StudentWorkMark(student, random.Next(9, 13));
 
                 }
             }
+
+
             
             group1.ShowStudents();
             
@@ -258,40 +261,140 @@ namespace Institute
             //groupWorkDelegate(ref group1);
             bool isRunning = true;
 
-            while (isRunning) 
+            ////делегаты
+            //while (isRunning) 
+            //{
+            //    Console.ForegroundColor = ConsoleColor.Green;
+            //    Console.WriteLine("1. Добавить студента");
+            //    Console.WriteLine("2. Удалить студента");
+            //    Console.WriteLine("3. Показать студентов с отличными оценками");
+            //    Console.WriteLine("4. Показать студентов с 3-ми за экзамен");
+            //    Console.WriteLine("5. Показать студентов");
+            //    Console.WriteLine("6. Выход");
+            //    Console.ForegroundColor = ConsoleColor.Gray;
+
+            //    Console.Write("Выберите действие: ");
+            //    int choice = int.Parse(Console.ReadLine());
+
+            //    switch (choice)
+            //    {
+            //        case 1:
+            //            ((GroupWorkDelegate)groupWorkDelegate.GetInvocationList()[0])(ref group1);
+
+            //            break;
+            //        case 2:
+            //            ((GroupWorkDelegate)groupWorkDelegate.GetInvocationList()[1])(ref group1);
+            //            break;
+            //        case 3:
+            //            ((GroupWorkDelegate)groupWorkDelegate.GetInvocationList()[2])(ref group1);
+            //            break;
+            //        case 4:
+            //            ((GroupWorkDelegate)groupWorkDelegate.GetInvocationList()[3])(ref group1);
+            //            break;
+            //        case 5:
+            //            Console.Clear();
+            //            group1.ShowStudents();
+            //            break;
+            //        case 6:
+            //            isRunning = false;
+            //            break;
+            //        default:
+            //            Console.WriteLine("Неверный ввод");
+            //            break;
+            //    }
+            //}
+
+            //лямбда выражения
+            Console.Clear();
+
+            
+
+            while(isRunning)
             {
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                group1.ShowStudents();
+
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("1. Добавить студента");
-                Console.WriteLine("2. Удалить студента");
-                Console.WriteLine("3. Показать студентов с отличными оценками");
-                Console.WriteLine("4. Показать студентов с 3-ми за экзамен");
-                Console.WriteLine("5. Показать студентов");
-                Console.WriteLine("6. Выход");
-                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("============Фильтры=============");
+                Console.WriteLine("1. Студенты-отличники");
+                Console.WriteLine("2. Студенты, чьи имена начинаются с буквы \"А\"");
+                Console.WriteLine("3. Студенты, у которых есть хотя бы одна оценка \"2\" за экзамен");
+                Console.WriteLine("4. Студенты без оценок за ДЗ");
+                Console.WriteLine("5. Студенты, у которых средний балл выше среднего балла всей группы");
+                Console.WriteLine("6. Студенты, чьи имена длиннее 5 символов");
+                Console.WriteLine("7. Студенты с одинаковыми оценками за Курсовые");
+                Console.WriteLine("8. Студенты с четным количеством оценок"); 
+                Console.WriteLine("9. Студенты, чья сумма всех оценок больше 50");
+                Console.WriteLine("10. Выход");
+                Console.ForegroundColor = ConsoleColor.Yellow;
 
                 Console.Write("Выберите действие: ");
                 int choice = int.Parse(Console.ReadLine());
 
+                
+
                 switch (choice)
                 {
                     case 1:
-                        ((GroupWorkDelegate)groupWorkDelegate.GetInvocationList()[0])(ref group1);
+                        Console.Clear();
+                        Group.FilterStudentDelegate del = delegate (Student student) { return student.AverageMark() >= 10; };
+                        var subGroup = group1.FilterStudents(del);
+                        ShowStudents(subGroup);
+                        break;
+
+                    case 2:
+                        Console.Clear();
+                        del = delegate(Student student) { return student.Person.FirstName.StartsWith("А"); };
+                        subGroup = group1.FilterStudents(del);
+                        ShowStudents(subGroup);
+                        break;
+
+                    case 3:
+                        Console.Clear();
+                        del = delegate (Student student) { return student.HaveExamMark(2); };
+                        subGroup = group1.FilterStudents(del);
+                        ShowStudents(subGroup);
+                        break;
+
+                    case 4:
+                        Console.Clear();
+                        del = delegate (Student student) { return student.AvgMark == 0; };
+                        subGroup = group1.FilterStudents(del);
+                        ShowStudents(subGroup);
 
                         break;
-                    case 2:
-                        ((GroupWorkDelegate)groupWorkDelegate.GetInvocationList()[1])(ref group1);
-                        break;
-                    case 3:
-                        ((GroupWorkDelegate)groupWorkDelegate.GetInvocationList()[2])(ref group1);
-                        break;
-                    case 4:
-                        ((GroupWorkDelegate)groupWorkDelegate.GetInvocationList()[3])(ref group1);
-                        break;
+
                     case 5:
                         Console.Clear();
-                        group1.ShowStudents();
+                        subGroup = group1.FilterStudents(student => student.AvgMark > group1.AvgGroupMark());
+                        ShowStudents(subGroup);
                         break;
+
                     case 6:
+                        Console.Clear();
+                        subGroup = group1.FilterStudents(student => student.Person.FirstName.Length > 5);
+                        ShowStudents(subGroup);
+                        break;
+
+                    case 7:
+                        
+                        Console.Clear();                        
+                        subGroup = group1.FilterStudents(student => group1.HaveSameMarks(student));
+                        ShowStudents(subGroup);
+                        break;
+
+                    case 8:
+                        Console.Clear();
+                        subGroup = group1.FilterStudents(student => student.MarkCount()%2 == 0);
+                        ShowStudents(subGroup);
+                        break;
+
+                    case 9:
+                        Console.Clear();
+                        subGroup = group1.FilterStudents(student => student.SummaryMark() > 50);
+                        ShowStudents(subGroup);
+                        break;
+                    case 10:
                         isRunning = false;
                         break;
                     default:
@@ -299,6 +402,7 @@ namespace Institute
                         break;
                 }
             }
+
         }
     }
 }
